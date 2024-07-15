@@ -4,6 +4,15 @@ from pydantic import BaseModel
 
 from template_models import LLMTemplateModel
 
+"""Example .config.toml file
+[openai]
+api_key = "<apikey>"
+
+
+[anthropic]
+api_key = "<apikey>"
+"""
+
 load_config().to_env() ## put .config.toml into environment variables
 
 @pytest.fixture
