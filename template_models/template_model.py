@@ -14,7 +14,7 @@ class SafeDict(dict):
         return "{" + key + "}"
 
 
-SUB = r"<(.*?)>"
+DEFAULT_FIELD_REGEX = r"<#(.*?)#>"
 
 
 @dataclass
@@ -22,7 +22,7 @@ class TemplateModel:
     template: str
     descriptions: Optional[dict[str, str]] = field(default_factory=dict[str, str])
     substitutions: Optional[dict[str, Any]] = field(default_factory=dict[str, Any])
-    field_regex: str = field(default=SUB)
+    field_regex: str = field(default=DEFAULT_FIELD_REGEX)
     delayed_substitution: Optional[bool] = False
     class_name: Optional[str] = None
     class_doc: Optional[str] = None
@@ -37,11 +37,10 @@ class TemplateModel:
                     k: self._format(v, self.substitutions) for k, v in self.descriptions.items()
                 }
 
-    # Function to extract field definitions from the template string
-
     def _extract_field_definitions(
         self, template, descriptions: Optional[dict[str, str]] = None
     ) -> dict[str, tuple[type, Any]]:
+        """Extract field definitions from the template string."""
         if descriptions is None:
             descriptions = {}
         matches = re.findall(self.field_regex, template)
@@ -120,10 +119,8 @@ class TemplateModel:
         Returns:
             The Pydantic model class.
         """
-        if substitutions is None:
-            substitutions = self.substitutions
-        if substitutions is None:
-            substitutions = {}
+        substitutions = substitutions or self.substitutions
+        substitutions = substitutions or {}
         class_name = class_name or self.class_name
         class_doc = class_doc or self.class_doc
 
@@ -185,7 +182,7 @@ class TemplateModel:
             substitutions = self.substitutions
         if substitutions is None:
             substitutions = {}
-        substituted_string = re.sub(SUB, replace_match, self.template)
+        substituted_string = re.sub(self.field_regex, replace_match, self.template)
         ## Also substitute the data
         if substitutions:
             substituted_string = self._format(substituted_string, substitutions)
@@ -193,7 +190,6 @@ class TemplateModel:
             substituted_string = self._format(substituted_string, data)
         return substituted_string
 
-    # Function to substitute values back into the template string
     def get_text(
         self,
         data: dict[str, Any],

@@ -5,20 +5,20 @@ from template_models.template_model import TemplateModel
 
 @pytest.fixture
 def name_age_no_type():
-    # Template string with field names, data types, and descriptions enclosed in <>
-    return "Name:<name|This is the name field> Age:<age|This is the age field>"
+    # Template string with field names, data types, and descriptions enclosed in <##>
+    return "Name:<#name|This is the name field#> Age:<#age|This is the age field#>"
 
 
 @pytest.fixture
 def name_age():
-    # Template string with field names, data types, and descriptions enclosed in <>
-    return "Name:<name|str|This is the name field> Age:<age|int|This is the age field>"
+    # Template string with field names, data types, and descriptions enclosed in <##>
+    return "Name:<#name|str|This is the name field#> Age:<#age|int|This is the age field#>"
 
 
 @pytest.fixture
 def name_age_with_sub_fields():
-    # Template string with field names, data types, and descriptions enclosed in <>
-    return "Var1:{var1} Name:<name|str|This is the name field> Age:<age|int|This is the age field>"
+    # Template string with field names, data types, and descriptions enclosed in <##>
+    return "Var1:{var1} Name:<#name|str|This is the name field#> Age:<#age|int|This is the age field#>"
 
 
 def test_model_instance(name_age):

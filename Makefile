@@ -1,16 +1,19 @@
+# Install the project
+install::
+	poetry install
+
+# Format the project
+format::
+	toml-sort pyproject.toml
+
 # Test Project
 test:: 
 	pytest tests
 
-format::
-	toml-sort pyproject.toml
-
 # Build the project
-build:: format test
-	poetry lock
-	toml-sort pyproject.toml
+build:: format
 	poetry build
 
 # Publish the project
-publish:: build
+publish:: test build 
 	poetry publish

@@ -30,6 +30,7 @@ def generate_tool_schema(pydantic_model):
 @dataclass
 class LLMTemplateModel(TemplateModel):
     system_prompt: Optional[str] = None
+    model_name: str = "gpt-4o-mini"
 
     def generate_instance(
         self,
@@ -43,15 +44,14 @@ class LLMTemplateModel(TemplateModel):
         model_name: Optional[str] = None,
         temperature: float = 0.0,
     ) -> BaseModel:
-        model_name = model_name or "gpt-3.5-turbo"
+        model_name = model_name or self.model_name
         system_prompt = system_prompt or self.system_prompt
 
         if system_prompt and substitutions:
             ## Has to be allow_unknown because llama_index also can have substitutions
             system_prompt = self._format(system_prompt, substitutions, allow_unknown=True)
         client = get_client(model=model_name, client=llm)
-        
-        
+
         pymodel = self.get_model(
             substitutions=substitutions, class_name=class_name, class_doc=class_doc
         )
@@ -75,9 +75,11 @@ class LLMTemplateModel(TemplateModel):
         substitutions: Optional[dict[str, Any]] = None,
         verbose: bool = True,
         llm: Optional[instructor.Instructor] = None,
-        model_name: str = "gpt-3.5-turbo",
+        model_name: Optional[str] = None,
         temperature: float = 0.0,
     ) -> str:
+        """Generate text from the query using the llm model.
+        """
         if substitutions:
             raise NotImplementedError("Substitutions are not supported for LLMTemplateModel yet")
         instance = self.generate_instance(
